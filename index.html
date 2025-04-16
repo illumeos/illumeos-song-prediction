@@ -6,9 +6,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
-  <h1>🎵 Your Song Is Ready</h1>
-  <p id="status">Tap the button below to play the song in the YouTube app.</p>
-  <button id="playButton" style="display:none;">▶️ Play in YouTube App</button>
+  <h1>🎵 Waiting for your song...</h1>
+  <p id="status">The video will play shortly...</p>
 
   <script>
     const firebaseConfig = {
@@ -28,8 +27,6 @@
     const params = new URLSearchParams(window.location.search);
     const roomId = params.get('room');
 
-    const button = document.getElementById("playButton");
-
     if (!roomId) {
       document.body.innerHTML = "<h2>❗ Room ID missing in URL</h2>";
     } else {
@@ -37,27 +34,22 @@
       ref.on('value', (snapshot) => {
         const url = snapshot.val();
         if (url) {
-          const videoId = extractYouTubeID(url);
-          if (videoId) {
-            const youtubeAppLink = `vnd.youtube://${videoId}?t=60`;
-
-            document.getElementById("status").innerText = "✅ Song ready! Tap below to open YouTube app:";
-            button.style.display = "block";
-
-            button.onclick = () => {
-              window.location.href = youtubeAppLink;
-            };
-          } else {
-            document.getElementById("status").innerText = "⚠️ Invalid YouTube link.";
-          }
+          const updatedUrl = addStartTime(url, 60); // start at 60 seconds
+          document.getElementById("status").innerText = "✅ Song received! Redirecting now...";
+          window.location.href = updatedUrl;
         }
       });
     }
 
-    function extractYouTubeID(url) {
-      const regex = /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-      const match = url.match(regex);
-      return match ? match[1] : null;
+    function addStartTime(url, seconds) {
+      if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        if (url.includes("?")) {
+          return url + "&t=" + seconds + "s";
+        } else {
+          return url + "?t=" + seconds + "s";
+        }
+      }
+      return url; // fallback, no changes
     }
   </script>
 </body>
