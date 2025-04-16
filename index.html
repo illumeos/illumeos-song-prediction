@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Audience - Illumeos Song</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h1>🎵 Your Song Is Ready</h1>
+  <p id="status">Tap the button below to play the song in the YouTube app.</p>
+  <button id="playButton" style="display:none;">▶️ Play in YouTube App</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAW28lwxCv0El4DcKKZqKcGEG1PQQhSZE8",
+      authDomain: "illumeos-song-prediction.firebaseapp.com",
+      projectId: "illumeos-song-prediction",
+      storageBucket: "illumeos-song-prediction.appspot.com",
+      messagingSenderId: "734906911857",
+      appId: "1:734906911857:web:4e69b3c06527f18fbadfd0",
+      measurementId: "G-KCK8PD8F64",
+      databaseURL: "https://illumeos-song-prediction-default-rtdb.firebaseio.com"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('room');
+
+    const button = document.getElementById("playButton");
+
+    if (!roomId) {
+      document.body.innerHTML = "<h2>❗ Room ID missing in URL</h2>";
+    } else {
+      const ref = db.ref('rooms/' + roomId + '/link');
+      ref.on('value', (snapshot) => {
+        const url = snapshot.val();
+        if (url) {
+          const videoId = extractYouTubeID(url);
+          if (videoId) {
+            const youtubeAppLink = `vnd.youtube://${videoId}?t=60`;
+
+            document.getElementById("status").innerText = "✅ Song ready! Tap below to open YouTube app:";
+            button.style.display = "block";
+
+            button.onclick = () => {
+              window.location.href = youtubeAppLink;
+            };
+          } else {
+            document.getElementById("status").innerText = "⚠️ Invalid YouTube link.";
+          }
+        }
+      });
+    }
+
+    function extractYouTubeID(url) {
+      const regex = /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    }
+  </script>
+</body>
+</html>

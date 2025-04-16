@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Control - Illumeos Song</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h1>🎛️ Send a Song to the Audience</h1>
+  <input id="room" placeholder="Room ID" />
+  <input id="link" placeholder="YouTube Link" />
+  <button onclick="send()">Send Link</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAW28lwxCv0El4DcKKZqKcGEG1PQQhSZE8",
+      authDomain: "illumeos-song-prediction.firebaseapp.com",
+      projectId: "illumeos-song-prediction",
+      storageBucket: "illumeos-song-prediction.appspot.com",
+      messagingSenderId: "734906911857",
+      appId: "1:734906911857:web:4e69b3c06527f18fbadfd0",
+      measurementId: "G-KCK8PD8F64",
+      databaseURL: "https://illumeos-song-prediction-default-rtdb.firebaseio.com"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function send() {
+      const room = document.getElementById('room').value.trim();
+      const link = document.getElementById('link').value.trim();
+      if (room && link) {
+        db.ref('rooms/' + room + '/link').set(link);
+        alert("✅ Sent to room: " + room);
+      } else {
+        alert("⚠️ Enter both Room ID and YouTube Link");
+      }
+    }
+  </script>
+</body>
+</html>
