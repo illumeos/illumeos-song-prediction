@@ -1,56 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Audience - Illumeos Song</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <meta charset="UTF-8">
+  <title>Song Prediction Reveal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      background-color: #ff4444;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.3s ease;
+    }
+    button:hover {
+      background-color: #ff2222;
+    }
+  </style>
 </head>
 <body>
-  <h1>🎵 Waiting for your song...</h1>
-  <p id="status">The video will play shortly...</p>
+
+  <h1>🎧 Your Song Prediction is Ready!</h1>
+  <p>Click the button below to reveal the song in the YouTube app.</p>
+
+  <button id="playButton">▶️ Open in YouTube App</button>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAW28lwxCv0El4DcKKZqKcGEG1PQQhSZE8",
-      authDomain: "illumeos-song-prediction.firebaseapp.com",
-      projectId: "illumeos-song-prediction",
-      storageBucket: "illumeos-song-prediction.appspot.com",
-      messagingSenderId: "734906911857",
-      appId: "1:734906911857:web:4e69b3c06527f18fbadfd0",
-      measurementId: "G-KCK8PD8F64",
-      databaseURL: "https://illumeos-song-prediction-default-rtdb.firebaseio.com"
+    // Replace this with dynamic value from Firebase or control system
+    const youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // example link
+    const videoId = youtubeLink.split("v=")[1].split("&")[0]; // Extract video ID
+    const startSeconds = 60; // Start from 1 minute
+
+    document.getElementById("playButton").onclick = () => {
+      // Attempt to open in YouTube App
+      window.location.href = `vnd.youtube://${videoId}?t=${startSeconds}`;
+
+      // Fallback to browser if app doesn't open
+      setTimeout(() => {
+        window.location.href = `https://www.youtube.com/watch?v=${videoId}&t=${startSeconds}s`;
+      }, 2000);
     };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const params = new URLSearchParams(window.location.search);
-    const roomId = params.get('room');
-
-    if (!roomId) {
-      document.body.innerHTML = "<h2>❗ Room ID missing in URL</h2>";
-    } else {
-      const ref = db.ref('rooms/' + roomId + '/link');
-      ref.on('value', (snapshot) => {
-        const url = snapshot.val();
-        if (url) {
-          const updatedUrl = addStartTime(url, 60); // start at 60 seconds
-          document.getElementById("status").innerText = "✅ Song received! Redirecting now...";
-          window.location.href = updatedUrl;
-        }
-      });
-    }
-
-    function addStartTime(url, seconds) {
-      if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        if (url.includes("?")) {
-          return url + "&t=" + seconds + "s";
-        } else {
-          return url + "?t=" + seconds + "s";
-        }
-      }
-      return url; // fallback, no changes
-    }
   </script>
+
 </body>
 </html>
