@@ -8,7 +8,7 @@
     body {
       background-color: #111;
       color: #fff;
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
       text-align: center;
       padding-top: 100px;
     }
@@ -16,21 +16,23 @@
 </head>
 <body>
 
-  <h1>🎶 Your Prediction is Loading...</h1>
-  <p>Please wait while we open your song in the YouTube app.</p>
+  <h1>🔮 Predicting Your Song...</h1>
+  <p>Please wait while we reveal it.</p>
 
   <script>
-    // Your YouTube link and start time
+    // Song link and starting time
     const youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-    const videoId = youtubeLink.split("v=")[1].split("&")[0];
     const startSeconds = 60;
+    const videoId = youtubeLink.split("v=")[1].split("&")[0];
 
-    // Try to open in YouTube app
-    window.location.href = `vnd.youtube://${videoId}?t=${startSeconds}`;
+    // Try to open YouTube app
+    const youtubeAppUrl = `vnd.youtube://${videoId}?t=${startSeconds}`;
+    window.location.href = youtubeAppUrl;
 
-    // Fallback to YouTube in browser after 2 seconds
+    // Fallback to browser version after 2 seconds
     setTimeout(() => {
-      window.location.href = `https://www.youtube.com/watch?v=${videoId}&t=${startSeconds}s`;
+      const browserUrl = `https://www.youtube.com/watch?v=${videoId}&t=${startSeconds}s`;
+      window.location.href = browserUrl;
     }, 2000);
   </script>
 
