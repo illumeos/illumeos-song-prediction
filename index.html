@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Song Prediction</title>
+  <title>Prediction Page</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -13,27 +13,50 @@
       padding-top: 100px;
     }
   </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
 
-  <h1>🔮 Predicting Your Song...</h1>
-  <p>Please wait while we reveal it.</p>
+  <h1>🔮 Waiting for the prediction...</h1>
+  <p>Please don't close this page.</p>
 
   <script>
-    // Song link and starting time
-    const youtubeLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-    const startSeconds = 60;
-    const videoId = youtubeLink.split("v=")[1].split("&")[0];
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAW28lwxCv0El4DcKKZqKcGEG1PQQhSZE8",
+      authDomain: "illumeos-song-prediction.firebaseapp.com",
+      projectId: "illumeos-song-prediction",
+      storageBucket: "illumeos-song-prediction.appspot.com",
+      messagingSenderId: "734906911857",
+      appId: "1:734906911857:web:4e69b3c06527f18fbadfd0",
+      measurementId: "G-KCK8PD8F64",
+      databaseURL: "https://illumeos-song-prediction-default-rtdb.firebaseio.com"
+    };
 
-    // Try to open YouTube app
-    const youtubeAppUrl = `vnd.youtube://${videoId}?t=${startSeconds}`;
-    window.location.href = youtubeAppUrl;
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    // Fallback to browser version after 2 seconds
-    setTimeout(() => {
-      const browserUrl = `https://www.youtube.com/watch?v=${videoId}&t=${startSeconds}s`;
-      window.location.href = browserUrl;
-    }, 2000);
+    // Listen for YouTube link in room "abc123"
+    const room = "abc123";
+
+    db.ref("rooms/" + room + "/youtubeLink").on("value", (snapshot) => {
+      const youtubeLink = snapshot.val();
+      if (youtubeLink) {
+        const videoId = youtubeLink.split("v=")[1].split("&")[0];
+        const startSeconds = 60;
+
+        // Try to open YouTube app
+        window.location.href = `vnd.youtube://${videoId}?t=${startSeconds}`;
+
+        // Fallback to browser after 2 seconds
+        setTimeout(() => {
+          window.location.href = `https://www.youtube.com/watch?v=${videoId}&t=${startSeconds}s`;
+        }, 2000);
+      }
+    });
   </script>
 
 </body>
